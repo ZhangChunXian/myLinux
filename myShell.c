@@ -252,13 +252,16 @@ int commandWithOutputRedi(char buf[BUFFSIZE]) {
         case 0: {
             // 完成输出重定向
             int fd;
-            fd = open(outFile, O_RDONLY, 7777);
+            fd = open(outFile, O_WRONLY|O_CREAT|O_TRUNC, 7777);
             // 文件打开失败
             if (fd < 0) {
                 exit(1);
             }
             dup2(fd, STDOUT_FILENO);  
             execvp(argv[0], argv);
+            if (fd != STDOUT_FILENO) {
+                close(fd);
+            }
             // 代码健壮性: 如果子进程未被成功执行, 则报错
             printf("%s: 命令输入错误\n", argv[0]);
             // exit函数终止当前进程, 括号内参数为1时, 会像操作系统报告该进程因异常而终止
