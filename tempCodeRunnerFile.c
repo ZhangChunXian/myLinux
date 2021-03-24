@@ -1,1 +1,3 @@
-    char outFile[BUFFSIZE];
+            if (fd != STDOUT_FILENO) {
+                close(fd);
+            }

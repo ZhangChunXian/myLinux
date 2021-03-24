@@ -211,7 +211,7 @@ int commandWithOutputRedi(char buf[BUFFSIZE]) {
     memset(outFile, 0x00, BUFFSIZE);
     int RediNum = 0;
     for ( i = 0; i + 1 < strlen(buf); i++) {
-        if (buf[i] == '>') {
+        if (buf[i] == '>' && buf[i + 1] == ' ') {
             RediNum++;
             break;
         }
@@ -314,7 +314,7 @@ int commandWithInputRedi(char buf[BUFFSIZE]) {
     }
     buf[j - 1] = '\0';
     buf[j] = '\0';
-
+    parse(buf);
     pid_t pid;
     switch(pid = fork()) {
         case -1: {
@@ -323,16 +323,18 @@ int commandWithInputRedi(char buf[BUFFSIZE]) {
         }
         // 处理子进程:
         case 0: {
-            // 完成输出重定向
+            // 完成输入重定向
             int fd;
-            fd = open(inFile, O_WRONLY|O_CREAT, 7777);
+            fd = open(inFile, O_RDONLY, 7777);
             // 文件打开失败
             if (fd < 0) {
                 exit(1);
             }
             dup2(fd, STDIN_FILENO);  
-            parse(buf);
             execvp(argv[0], argv);
+            if (fd != STDIN_FILENO) {
+                close(fd);
+            }
             // 代码健壮性: 如果子进程未被成功执行, 则报错
             printf("%s: 命令输入错误\n", argv[0]);
             // exit函数终止当前进程, 括号内参数为1时, 会像操作系统报告该进程因异常而终止
@@ -363,7 +365,7 @@ int commandWithReOutputRedi(char buf[BUFFSIZE]) {
         }
     }
     if (RediNum != 1) {
-        printf("输出重定向指令输入有误!");
+        printf("追加输出重定向指令输入有误!");
         return 0;
     }
 
@@ -379,15 +381,16 @@ int commandWithReOutputRedi(char buf[BUFFSIZE]) {
     }
 
     // 指令分割, outFile为输出文件, buf为重定向符号前的命令
-    for (j = 0; j + 2< strlen(buf); j++) {
-        if (buf[j] == '>' && buf[j + 1] == '>') {
+    for (j = 0; j + 2 < strlen(buf); j++) {
+        if (buf[j] == '>' && buf[j + 1] == '>' 
+            && buf[j + 2] == ' ') {
             break;
         }
     }
     buf[j - 1] = '\0';
     buf[j] = '\0';
     // 解析指令
-
+    parse(buf);
     pid_t pid;
     switch(pid = fork()) {
         case -1: {
@@ -398,14 +401,16 @@ int commandWithReOutputRedi(char buf[BUFFSIZE]) {
         case 0: {
             // 完成输出重定向
             int fd;
-            fd = open(reOutFile, O_WRONLY|O_CREAT|O_APPEND, 7777);
+            fd = open(reOutFile, O_WRONLY|O_APPEND|O_CREAT|O_APPEND, 7777);
             // 文件打开失败
             if (fd < 0) {
                 exit(1);
             }
             dup2(fd, STDOUT_FILENO);  
-            parse(buf);
             execvp(argv[0], argv);
+            if (fd != STDOUT_FILENO) {
+                close(fd);
+            }
             // 代码健壮性: 如果子进程未被成功执行, 则报错
             printf("%s: 命令输入错误\n", argv[0]);
             // exit函数终止当前进程, 括号内参数为1时, 会像操作系统报告该进程因异常而终止

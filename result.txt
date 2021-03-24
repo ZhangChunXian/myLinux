@@ -8,3 +8,13 @@ drwxr-xr-x 8 root root   203 Mar 24 21:06 .git
 ---sr-S--t 1 root root     0 Mar 24 21:14 result.txt
 -rw-r--r-- 1 root root    28 Mar 24 21:03 tempCodeRunnerFile.c
 drwxr-xr-x 2 root root    64 Mar 24 15:55 .vscode
+total 52
+drwxr-xr-x 4 root root   128 Mar 24 21:24 .
+drwxr-xr-x 7 root root   106 Mar 24 21:03 ..
+drwxr-xr-x 8 root root   203 Mar 24 21:15 .git
+-rwxr-xr-x 1 root root 22464 Mar 24 21:24 myShell
+-rw-r--r-- 1 root root 13307 Mar 24 21:22 myShell.c
+-rw-r--r-- 1 root root     9 Mar 24 21:03 README.md
+---sr-S--t 1 root root   465 Mar 24 21:14 result.txt
+-rw-r--r-- 1 root root    79 Mar 24 21:24 tempCodeRunnerFile.c
+drwxr-xr-x 2 root root    64 Mar 24 15:55 .vscode
