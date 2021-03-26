@@ -38,7 +38,7 @@ void do_cmd(int argc, char* argv[]);
     int commandWithOutputRedi(char buf[BUFFSIZE]);          // 执行输出重定向
     int commandWithInputRedi(char buf[BUFFSIZE]);           // 执行输入重定向命令
     int commandWithReOutputRedi(char buf[BUFFSIZE]);        // 执行输出重定向追加写
-
+    int commandWithPipe(char buf[BUFFSIZE]);                // 执行管道命令
 
 /* 函数定义 */
 /* get_input接受输入的字符并存入buf数组中 */
@@ -126,6 +126,15 @@ void do_cmd(int argc, char* argv[]) {
         if (strcmp(command[j], ">>") == 0) {
             strcpy(buf, backupBuf);
             int sample = commandWithReOutputRedi(buf);
+            return;
+        }
+    }
+
+    // 识别管道命令
+    for (j = 0; j < MAX_CMD; j++) {
+        if (strcmp(command[j], "|") == 0) {
+            strcpy(buf, backupBuf);
+            int sample = commandWithPipe(buf);
             return;
         }
     }
@@ -428,6 +437,70 @@ int commandWithReOutputRedi(char buf[BUFFSIZE]) {
 }
 
 
+int commandWithPipe(char buf[BUFFSIZE]) {
+    // 获取管道符号的位置索引
+    for(j = 0; buf[j] != '\0'; j++) {
+        if (buf[j] == '|')
+            break;
+    }
+
+    // 分离指令, 将管道符号前后的指令存放在两个数组中
+    // outputBuf存放管道前的命令, inputBuf存放管道后的命令
+    char outputBuf[j];
+    memset(outputBuf, 0x00, j);
+    char inputBuf[strlen(buf) - j];
+    memset(inputBuf, 0x00, strlen(buf) - j);
+    for (i = 0; i < j - 1; i++) {
+        outputBuf[i] = buf[i];
+    }
+    for (i = 0; i < strlen(buf) - j - 1; i++) {
+        inputBuf[i] = buf[j + 2 + i];
+    }
+
+
+    int pd[2];
+    pid_t pid;
+    if (pipe(pd) < 0) {
+        perror("pipe()");
+        exit(1);
+    }
+
+    pid = fork();
+    if (pid < 0) {
+        perror("fork()");
+        exit(1);
+    }
+
+    if (pid == 0) {
+        close(pd[1]);                   // 关闭子进程的写端
+        parse(outputBuf);
+        execvp(argv[0], argv);
+        dup2(pd[0], STDIN_FILENO);      // 管道读端读到的作为标准输入
+        // system("grep my");
+        if (pd[0] != STDIN_FILENO) {
+            close(pd[0]);
+        }
+        exit(0);
+    } else {
+        close(pd[0]);                   // 关闭父进程的读端
+        parse(inputBuf);
+        execvp(argv[0], argv);
+        dup2(pd[1], STDOUT_FILENO);     // 将父进程的端写作为标准输出
+        // system("ls -a -l");
+        if (pd[1] != STDOUT_FILENO) {
+            close(pd[1]);
+        }
+        int status;
+        waitpid(pid, &status, 0);      // 等待子进程返回
+        int err = WEXITSTATUS(status); // 读取子进程的返回码
+
+        if (err) { 
+            printf("Error: %s\n", strerror(err));
+        }
+        exit(0);  
+    }
+    return 1;
+}
 
 /* main函数 */
 int main() {
