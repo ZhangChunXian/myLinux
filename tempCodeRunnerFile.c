@@ -1,3 +1,1 @@
-            if (fd != STDOUT_FILENO) {
-                close(fd);
-            }
+        dup2(pd[1], STDOUT_FILENO);     // 将父进程的端写作为标准输出

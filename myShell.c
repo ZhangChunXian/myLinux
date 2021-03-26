@@ -471,22 +471,20 @@ int commandWithPipe(char buf[BUFFSIZE]) {
         exit(1);
     }
 
-    if (pid == 0) {
+    if (pid == 0) {                        // 子进程读管道
         close(pd[1]);                   // 关闭子进程的写端
-        parse(outputBuf);
-        execvp(argv[0], argv);
         dup2(pd[0], STDIN_FILENO);      // 管道读端读到的作为标准输入
-        // system("grep my");
+        parse(inputBuf);
+        execvp(argv[0], argv);
         if (pd[0] != STDIN_FILENO) {
             close(pd[0]);
         }
         exit(0);
     } else {
         close(pd[0]);                   // 关闭父进程的读端
-        parse(inputBuf);
-        execvp(argv[0], argv);
         dup2(pd[1], STDOUT_FILENO);     // 将父进程的端写作为标准输出
-        // system("ls -a -l");
+        parse(outputBuf);
+        execvp(argv[0], argv);
         if (pd[1] != STDOUT_FILENO) {
             close(pd[1]);
         }
@@ -504,7 +502,7 @@ int commandWithPipe(char buf[BUFFSIZE]) {
 
 /* main函数 */
 int main() {
-        // while循环
+    // while循环
     while(1) {
         printf("[myshell]$ ");
         // 输入字符存入buf数组, 如果输入字符数为0, 则跳过此次循环
