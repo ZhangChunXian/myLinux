@@ -1,1 +1,1 @@
-        dup2(pd[1], STDOUT_FILENO);     // 将父进程的端写作为标准输出
+get_current

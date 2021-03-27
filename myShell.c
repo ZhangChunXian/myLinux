@@ -7,6 +7,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <signal.h>
 
 /* 宏定义 */
 #define IN 1
@@ -39,6 +40,9 @@ void do_cmd(int argc, char* argv[]);
     int commandWithInputRedi(char buf[BUFFSIZE]);           // 执行输入重定向命令
     int commandWithReOutputRedi(char buf[BUFFSIZE]);        // 执行输出重定向追加写
     int commandWithPipe(char buf[BUFFSIZE]);                // 执行管道命令
+    int commandInBackground(char buf[BUFFSIZE]);
+
+
 
 /* 函数定义 */
 /* get_input接受输入的字符并存入buf数组中 */
@@ -135,6 +139,15 @@ void do_cmd(int argc, char* argv[]) {
         if (strcmp(command[j], "|") == 0) {
             strcpy(buf, backupBuf);
             int sample = commandWithPipe(buf);
+            return;
+        }
+    }
+
+    // 识别后台运行命令
+    for (j = 0; j < MAX_CMD; j++) {
+        if (strcmp(command[j], "&") == 0) {
+            strcpy(buf, backupBuf);
+            int sample = commandInBackground(buf);
             return;
         }
     }
@@ -499,6 +512,43 @@ int commandWithPipe(char buf[BUFFSIZE]) {
     }
     return 1;
 }
+
+
+int commandInBackground(char buf[BUFFSIZE]) {
+    char backgroundBuf[strlen(buf)];
+    memset(backgroundBuf, 0x00, strlen(buf));
+    for (i = 0; i < strlen(buf); i++) {
+        backgroundBuf[i] = buf[i];
+        if (buf[i] == '&') {
+            backgroundBuf[i] = '\0';
+            backgroundBuf[i - 1] = '\0';
+            break;
+        }
+    }
+
+    pid_t pid;
+    pid = fork();
+    if (pid < 0) {
+        perror("fork()");
+        exit(1);
+    }
+
+    if (pid == 0) {
+        // 将stdin、stdout、stderr重定向到/dev/null
+        freopen( "/dev/null", "w", stdout );
+        freopen( "/dev/null", "r", stdin ); 
+        signal(SIGCHLD,SIG_IGN);
+        parse(backgroundBuf);
+        execvp(argv[0], argv);
+        printf("%s: 命令输入错误\n", argv[0]);
+        // exit函数终止当前进程, 括号内参数为1时, 会像操作系统报告该进程因异常而终止
+        exit(1);
+    }else {
+        exit(0);
+    }    
+}
+
+
 
 /* main函数 */
 int main() {
