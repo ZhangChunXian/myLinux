@@ -545,7 +545,7 @@ int commandInBackground(char buf[BUFFSIZE]) {
         exit(1);
     }else {
         exit(0);
-    }    
+    }
 }
 
 
