@@ -1,0 +1,6 @@
+total 44
+drwxr-xr-x 2 root root    56 Mar 29 14:21 .
+drwxr-xr-x 5 root root   142 Mar 29 14:17 ..
+-rwxr-xr-x 1 root root 22784 Mar 29 14:20 myShell
+-rw-r--r-- 1 root root 16674 Mar 29 14:15 myShell.c
+---sr-S--t 1 root root     0 Mar 29 14:21 result.txt

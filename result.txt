@@ -1,10 +1,13 @@
-total 52
-drwxr-xr-x 4 root root   113 Mar 27 16:34 .
+这是原本的内容, 下面为追加的内容
+
+total 88
+drwxr-xr-x 4 root root   124 Mar 29 13:35 .
 drwxr-xr-x 7 root root   106 Mar 24 21:03 ..
-drwxr-xr-x 8 root root   203 Mar 27 14:19 .git
--rwxr-xr-x 1 root root 22784 Mar 27 16:34 myShell
--rw-r--r-- 1 root root 16617 Mar 27 16:34 myShell.c
+drwxr-xr-x 8 root root   203 Mar 29 10:33 .git
+-rwxr-xr-x 1 root root 28496 Mar 29 11:33 myShell
+-rw-r--r-- 1 root root 21845 Mar 29 13:40 myShell.c
 -rw-r--r-- 1 root root     9 Mar 24 21:03 README.md
----sr-S--t 1 root root     0 Mar 27 16:35 result.txt
--rw-r--r-- 1 root root  3285 Mar 27 16:24 top.c
+---sr-S--t 1 root root    49 Mar 29 13:58 result.txt
+-rwxr-xr-x 1 root root 18632 Mar 29 10:34 top
+-rw-r--r-- 1 root root  5273 Mar 27 20:45 top.c
 drwxr-xr-x 2 root root    64 Mar 24 15:55 .vscode
