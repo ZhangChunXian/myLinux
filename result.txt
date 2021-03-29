@@ -1,12 +1,10 @@
-total 84
-drwxr-xr-x 4 root root   168 Mar 25 14:45 .
+total 52
+drwxr-xr-x 4 root root   113 Mar 27 16:34 .
 drwxr-xr-x 7 root root   106 Mar 24 21:03 ..
-drwxr-xr-x 8 root root   203 Mar 24 21:25 .git
--rwxr-xr-x 1 root root 23408 Mar 25 14:45 githubShell
--rw-r--r-- 1 root root 10517 Mar 25 14:44 githubShell.c
--rwxr-xr-x 1 root root 22464 Mar 24 21:24 myShell
--rw-r--r-- 1 root root 13307 Mar 24 21:22 myShell.c
+drwxr-xr-x 8 root root   203 Mar 27 14:19 .git
+-rwxr-xr-x 1 root root 22784 Mar 27 16:34 myShell
+-rw-r--r-- 1 root root 16617 Mar 27 16:34 myShell.c
 -rw-r--r-- 1 root root     9 Mar 24 21:03 README.md
----sr-S--t 1 root root     0 Mar 25 14:46 result.txt
--rw-r--r-- 1 root root    79 Mar 24 21:24 tempCodeRunnerFile.c
+---sr-S--t 1 root root     0 Mar 27 16:35 result.txt
+-rw-r--r-- 1 root root  3285 Mar 27 16:24 top.c
 drwxr-xr-x 2 root root    64 Mar 24 15:55 .vscode
