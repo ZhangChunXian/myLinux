@@ -486,32 +486,35 @@ int commandWithPipe(char buf[BUFFSIZE]) {
         exit(1);
     }
 
-    if (pid == 0) {                        // 子进程读管道
-        close(pd[1]);                   // 关闭子进程的写端
-        dup2(pd[0], STDIN_FILENO);      // 管道读端读到的作为标准输入
-        parse(inputBuf);
-        execvp(argv[0], argv);
-        if (pd[0] != STDIN_FILENO) {
-            close(pd[0]);
-        }
-        exit(0);
-    } else {
-        close(pd[0]);                   // 关闭父进程的读端
-        dup2(pd[1], STDOUT_FILENO);     // 将父进程的端写作为标准输出
+
+    if (pid == 0) {                     // 子进程写管道
+        close(pd[0]);                   // 关闭子进程的读端
+        dup2(pd[1], STDOUT_FILENO);     // 将子进程的写端作为标准输出
         parse(outputBuf);
         execvp(argv[0], argv);
         if (pd[1] != STDOUT_FILENO) {
             close(pd[1]);
         }
+    }else {                              // 父进程读管道
+        /** 关键代码
+         *  子进程写管道完毕后再执行父进程读管道, 所以需要用wait函数等待子进程返回后再操作
+         */
         int status;
-        waitpid(pid, &status, 0);      // 等待子进程返回
-        int err = WEXITSTATUS(status); // 读取子进程的返回码
-
+        waitpid(pid, &status, 0);       // 等待子进程返回
+        int err = WEXITSTATUS(status);  // 读取子进程的返回码
         if (err) { 
             printf("Error: %s\n", strerror(err));
         }
-        exit(0);  
+
+        close(pd[1]);                    // 关闭父进程管道的写端
+        dup2(pd[0], STDIN_FILENO);       // 管道读端读到的重定向为标准输入
+        parse(inputBuf);
+        execvp(argv[0], argv);
+        if (pd[0] != STDIN_FILENO) {
+            close(pd[0]);
+        }       
     }
+
     return 1;
 }
 
